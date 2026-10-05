@@ -1,0 +1,88 @@
+body.cairo, .cairo, .cairo h1, .cairo h2, .cairo h3, .cairo h4, .cairo h5, .cairo h6, .cairo p, .cairo span, .cairo a, .cairo button, .cairo input, .cairo select, .cairo textarea, .cairo .form-control, .cairo .side-menu__label, .cairo .btn {
+    font-family: "Cairo", sans-serif !important;
+}
+
+.app-sidebar .side-menu__item {
+    display: flex !important;
+    align-items: center !important;
+    height: 40px;
+}
+
+.app-sidebar .side-menu .side-menu__icon {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    line-height: 1 !important;
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+
+.app-sidebar .side-menu__label {
+    display: flex;
+    align-items: center;
+    line-height: 1 !important;
+    margin: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.app-sidebar .angle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1 !important;
+    margin-top: 0 !important;
+    height: 22px;
+}
+
+body.app .app-sidebar .side-menu > li.slide > ul.slide-menu {
+    box-sizing: border-box;
+    overflow: hidden;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    transition: max-height 300ms cubic-bezier(0.4, 0, 0.2, 1),
+                padding-top 300ms cubic-bezier(0.4, 0, 0.2, 1),
+                padding-bottom 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.app .app-sidebar .side-menu > li.slide.is-expanded > ul.slide-menu {
+    max-height: 40rem;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+body.app .app-sidebar .side-menu > li.slide > a.side-menu__item > .angle {
+    transform-origin: center;
+    transition: transform 300ms ease;
+}
+
+body.app .app-sidebar .side-menu > li.slide.is-expanded > a.side-menu__item > .angle {
+    transform: rotate(180deg);
+}
+
+@media (min-width: 768px) {
+    body.app.sidenav-toggled:not(.sidenav-toggled-open) .app-sidebar .side-menu > li.slide > ul.slide-menu {
+        height: auto;
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        transition: visibility 0.3s ease;
+    }
+
+    body.app.sidenav-toggled:not(.sidenav-toggled-open) .app-sidebar .side-menu > li.slide:hover > ul.slide-menu,
+    body.app.sidenav-toggled:not(.sidenav-toggled-open) .app-sidebar .side-menu__item:hover + ul.slide-menu {
+        max-height: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.app .app-sidebar .side-menu > li.slide > ul.slide-menu,
+    body.app .app-sidebar .side-menu > li.slide > a.side-menu__item > .angle {
+        transition: none;
+    }
+}
