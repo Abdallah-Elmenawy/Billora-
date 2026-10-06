@@ -12,6 +12,7 @@
     }
     .profile-page .profile-label {
         display: block;
+        text-align: right;
         font-weight: 700;
         color: #1F2937;
         margin-bottom: 0.45rem;

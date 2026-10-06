@@ -2,7 +2,7 @@
 @section('page-header')
     @include('admin.partials.page-header', [
         'title' => 'المخزون',
-        'action' => '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addStockModal"><i class="fe fe-plus ml-1"></i> حركة مخزون يدوية</button>',
+        'action' => can('inventory.create') ? '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addStockModal"><i class="fe fe-plus ml-1"></i> حركة مخزون يدوية</button>' : '',
     ])
 @endsection
 @section('content')
@@ -49,7 +49,7 @@
                     </td>
                     <td class="col-actions">
                         <div class="btn-actions">
-                            <x-edit-link :href="route('products.edit', $p)" title="تعديل المنتج" />
+                            @if(can('products.update'))<x-edit-link :href="route('products.edit', $p)" title="تعديل المنتج" />@endif
                         </div>
                     </td>
                 </tr>

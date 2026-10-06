@@ -37,7 +37,7 @@
     </div>
     <div class="card-footer table-card-footer">
         <div class="report-total flex-grow-1"><span>الإجمالي</span><strong>{{ money($return->total) }}</strong></div>
-        @if($return->status==='draft')
+        @if($return->status==='draft' && can('sales.update'))
             <form method="post" action="{{ route('sales-returns.confirm', $return) }}">@csrf<button class="btn btn-success"><i class="fe fe-check ml-1"></i> تأكيد المرتجع</button></form>
         @endif
     </div>

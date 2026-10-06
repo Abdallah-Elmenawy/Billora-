@@ -47,7 +47,7 @@
                 <div class="card-body"><canvas id="dashChart" height="110"></canvas></div>
             </div>
         </div>
-        <div class="col-xl-6">
+        <div class="col-xl-12">
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title mb-0"><i class="fe fe-shopping-cart"></i> آخر فواتير المبيعات</h4>
@@ -79,7 +79,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-6">
+        <div class="col-xl-12">
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title mb-0"><i class="fe fe-credit-card"></i> آخر التحصيلات والمدفوعات</h4>
@@ -105,7 +105,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-4">
+        <div class="col-xl-6">
             <div class="card">
                 <div class="card-header"><h4 class="card-title mb-0">منتجات منخفضة المخزون</h4></div>
                 <div class="card-body">
@@ -119,7 +119,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-4">
+        <div class="col-xl-6">
             <div class="card">
                 <div class="card-header"><h4 class="card-title mb-0">أكثر المنتجات مبيعاً</h4></div>
                 <div class="card-body">
@@ -133,7 +133,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-4">
+        <div class="col-xl-6">
             <div class="card">
                 <div class="card-header"><h4 class="card-title mb-0">آخر النشاطات</h4></div>
                 <div class="card-body">

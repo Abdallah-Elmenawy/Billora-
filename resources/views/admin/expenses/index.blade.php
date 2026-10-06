@@ -2,7 +2,7 @@
 @section('page-header')
     @include('admin.partials.page-header', [
         'title' => 'المصروفات والإيرادات',
-        'action' => '<button type="button" class="btn btn-light ml-2" data-toggle="modal" data-target="#addCategoryModal"><i class="fe fe-tag ml-1"></i> إضافة تصنيف</button><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEntryModal"><i class="fe fe-plus ml-1"></i> إضافة عملية</button>',
+        'action' => can('expenses.create') ? '<button type="button" class="btn btn-light ml-2" data-toggle="modal" data-target="#addCategoryModal"><i class="fe fe-tag ml-1"></i> إضافة تصنيف</button><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEntryModal"><i class="fe fe-plus ml-1"></i> إضافة عملية</button>' : '',
     ])
 @endsection
 @section('content')
@@ -44,8 +44,8 @@
                     <td class="text-muted">{{ optional($e->created_at)->format('H:i Y-m-d') }}</td>
                     <td class="col-actions">
                         <div class="btn-actions">
-                            <x-edit-link :href="route('expenses.edit', $e)" />
-                            <x-delete-form :action="route('expenses.destroy', $e)" message="هل أنت متأكد من حذف هذه العملية؟ سيتم التراجع عن تأثيرها على الخزينة." title="حذف العملية" />
+                                @if(can('expenses.update'))<x-edit-link :href="route('expenses.edit', $e)" />@endif
+                                @if(can('expenses.delete'))<x-delete-form :action="route('expenses.destroy', $e)" message="هل أنت متأكد من حذف هذه العملية؟ سيتم التراجع عن تأثيرها على الخزينة." title="حذف العملية" />@endif
                         </div>
                     </td>
                 </tr>

@@ -2,7 +2,7 @@
 @section('page-header')
     @include('admin.partials.page-header', [
         'title' => 'المستخدمون',
-        'action' => '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addUserModal"><i class="fe fe-user-plus ml-1"></i> إضافة مستخدم</button>',
+        'action' => can('users.create') ? '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addUserModal"><i class="fe fe-user-plus ml-1"></i> إضافة مستخدم</button>' : '',
     ])
 @endsection
 @section('content')
@@ -39,7 +39,7 @@
                     <td><span class="badge badge-{{ $statusBadges[$u->status] ?? 'light' }}">{{ $statusLabels[$u->status] ?? $u->status }}</span></td>
                     <td class="col-actions">
                         <div class="btn-actions">
-                            <x-edit-link :href="route('users.edit', $u)" />
+                                @if(can('users.update'))<x-edit-link :href="route('users.edit', $u)" />@endif
                         </div>
                     </td>
                 </tr>

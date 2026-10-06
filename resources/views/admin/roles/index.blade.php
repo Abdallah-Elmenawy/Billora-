@@ -2,7 +2,7 @@
 @section('page-header')
     @include('admin.partials.page-header', [
         'title' => 'الأدوار والصلاحيات',
-        'action' => '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addRoleModal"><i class="fe fe-plus ml-1"></i> إضافة دور</button>',
+        'action' => can('users.create') ? '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addRoleModal"><i class="fe fe-plus ml-1"></i> إضافة دور</button>' : '',
     ])
 @endsection
 @section('content')
@@ -31,12 +31,34 @@
                     <td class="col-serial">{{ row_no($roles, $loop) }}</td>
                     <td class="cell-strong">{{ $role->name }}</td>
                     <td>{{ $role->description ?: '-' }}</td>
-                    <td><span class="badge badge-info">{{ $role->permissions->count() }} صلاحية</span></td>
+                    <td class="perm-cell">
+                        @php $grouped = $role->permissions->groupBy('module'); @endphp
+                        @if($grouped->isEmpty())
+                            <span class="perm-empty">بدون صلاحيات</span>
+                        @elseif($grouped->count() >= count($modules))
+                            <span class="perm-full" title="{{ $role->permissions->pluck('name')->join('، ') }}">
+                                <i class="fe fe-shield"></i>
+                                كل الأقسام
+                                <b>{{ $role->permissions->count() }}</b>
+                            </span>
+                        @else
+                            <div class="perm-badges">
+                                @foreach($grouped as $module => $perms)
+                                    <span class="perm-chip" title="{{ $perms->pluck('name')->join('، ') }}">
+                                        <b>{{ $perms->count() }}</b>
+                                        {{ $modules[$module] ?? $module }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        @endif
+                    </td>
                     <td><span class="badge badge-light">{{ $role->users_count }} مستخدم</span></td>
                     <td class="col-actions">
                         <div class="btn-actions">
-                            <x-edit-link :href="route('roles.edit', $role)" />
-                            @if($role->slug !== 'admin')
+                            @if(can('users.update'))
+                                <x-edit-link :href="route('roles.edit', $role)" />
+                            @endif
+                            @if(can('users.delete') && $role->slug !== 'admin')
                                 <x-delete-form :action="route('roles.destroy', $role)" message="هل أنت متأكد من حذف هذا الدور؟" title="حذف الدور" />
                             @endif
                         </div>
@@ -74,21 +96,7 @@
                         </div>
                     </div>
                     <h5 class="mb-3">الصلاحيات</h5>
-                    <div class="row">
-                        @foreach($permissions as $module => $items)
-                            <div class="col-md-6 mb-3">
-                                <div class="perm-card">
-                                    <h6>{{ $module }}</h6>
-                                    @foreach($items as $p)
-                                        <label class="perm-item">
-                                            <input type="checkbox" name="permissions[]" value="{{ $p->id }}" @checked(collect(old('permissions', []))->contains($p->id))>
-                                            <span>{{ $p->name }}</span>
-                                        </label>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
+                    @include('admin.roles._permissions', ['selected' => old('permissions', [])])
                 </div>
                 <div class="modal-footer border-0 px-4 pb-4">
                     <button type="submit" class="btn btn-primary">حفظ</button>

@@ -910,10 +910,78 @@ body.bg-primary-transparent {
   height: 100%;
   text-align: right;
 }
-.perm-card h6 {
+.perm-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   margin-bottom: 0.75rem;
+}
+.perm-card h6 {
+  margin: 0;
   font-weight: 800;
   color: #2D3E50;
+}
+.perm-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6B5CE7;
+  cursor: pointer;
+}
+.table td.perm-cell {
+  text-align: right !important;
+  white-space: normal !important;
+  min-width: 220px;
+}
+.perm-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-start;
+}
+.perm-chip,
+.perm-full {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #F4F7FE;
+  border: 1px solid #E3EAF6;
+  color: #2D3E50;
+  border-radius: 10px;
+  padding: 4px 8px 4px 4px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.perm-chip b,
+.perm-full b {
+  background: var(--b-gradient);
+  color: #fff;
+  border-radius: 7px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+.perm-full {
+  background: #F3EEFF;
+  border-color: #DDD0FA;
+  color: #5B3CC4;
+  padding: 6px 10px 6px 6px;
+  font-size: 13px;
+}
+.perm-full i { font-size: 14px; }
+.perm-empty {
+  color: #9CA3AF;
+  font-weight: 600;
+  font-size: 13px;
 }
 .perm-item {
   display: flex;

@@ -2,7 +2,7 @@
 @section('page-header')
     @include('admin.partials.page-header', [
         'title' => 'تصنيفات المنتجات',
-        'action' => '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCategoryModal"><i class="fe fe-plus ml-1"></i> إضافة تصنيف</button>',
+        'action' => can('products.create') ? '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCategoryModal"><i class="fe fe-plus ml-1"></i> إضافة تصنيف</button>' : '',
     ])
 @endsection
 @section('content')
@@ -36,10 +36,12 @@
                     <td><span class="badge badge-light">{{ $c->products_count }} منتج</span></td>
                     <td class="col-actions">
                         <div class="btn-actions">
+                            @if(can('products.update'))
                             <button type="submit" form="category-form-{{ $c->id }}" class="btn btn-icon-action btn-icon-edit" title="حفظ التعديل">
                                 <i class="fe fe-check"></i><span class="sr-only">حفظ التعديل</span>
                             </button>
-                            <x-delete-form :action="route('categories.destroy', $c)" message="هل أنت متأكد من حذف هذا التصنيف؟" title="حذف التصنيف" />
+                            @endif
+                            @if(can('products.delete'))<x-delete-form :action="route('categories.destroy', $c)" message="هل أنت متأكد من حذف هذا التصنيف؟" title="حذف التصنيف" />@endif
                         </div>
                     </td>
                 </tr>

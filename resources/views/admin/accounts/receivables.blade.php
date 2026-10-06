@@ -26,7 +26,7 @@
                     <td class="col-actions">
                         <div class="btn-actions">
                             <x-view-link :href="route('customers.show', $c)" title="كشف الحساب" />
-                            <x-edit-link :href="route('customers.edit', $c)" />
+                            @if(can('customers.update'))<x-edit-link :href="route('customers.edit', $c)" />@endif
                         </div>
                     </td>
                 </tr>

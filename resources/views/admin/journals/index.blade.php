@@ -2,7 +2,7 @@
 @section('page-header')
     @include('admin.partials.page-header', [
         'title' => 'القيود المحاسبية',
-        'action' => '<a href="'.route('journals.create').'" class="btn btn-primary"><i class="fe fe-plus ml-1"></i> قيد جديد</a>',
+        'action' => can('accounting.create') ? '<a href="'.route('journals.create').'" class="btn btn-primary"><i class="fe fe-plus ml-1"></i> قيد جديد</a>' : '',
     ])
 @endsection
 @section('content')

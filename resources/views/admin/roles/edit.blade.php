@@ -1,10 +1,21 @@
 @extends('layouts.master')
 @section('page-header')
-    @include('admin.partials.page-header', ['title' => 'تعديل الدور'])
+    @include('admin.partials.page-header', [
+        'title' => 'تعديل الدور',
+        'subtitle' => $role->name,
+        'action' => '<a href="'.route('roles.index').'" class="btn btn-light"><i class="fe fe-arrow-right ml-1"></i> كل الأدوار</a>',
+    ])
 @endsection
 @section('content')
 <div class="card">
-    <div class="card-body p-4 p-md-5">
+    <div class="card-header">
+        <h4 class="card-title"><i class="fe fe-shield"></i> {{ $role->name }}</h4>
+        <span class="count-badge">{{ $role->permissions->count() }} صلاحية</span>
+    </div>
+    <div class="card-body p-4">
+        @if($role->slug === 'admin')
+            <div class="alert alert-info">دور مدير النظام يملك كل الصلاحيات دائمًا، ولا يمكن تقييده.</div>
+        @endif
         <form method="post" action="{{ route('roles.update', $role) }}">
             @csrf
             @method('PUT')
@@ -20,22 +31,11 @@
                 </div>
             </div>
 
-            <h4 class="mt-2 mb-3">الصلاحيات</h4>
-            <div class="row">
-                @foreach($permissions as $module => $items)
-                    <div class="col-md-6 col-lg-4 mb-3">
-                        <div class="perm-card">
-                            <h6>{{ $module }}</h6>
-                            @foreach($items as $p)
-                                <label class="perm-item">
-                                    <input type="checkbox" name="permissions[]" value="{{ $p->id }}" @checked(collect(old('permissions', $role->permissions->pluck('id')->all()))->contains($p->id))>
-                                    <span>{{ $p->name }}</span>
-                                </label>
-                            @endforeach
-                        </div>
-                    </div>
-                @endforeach
-            </div>
+            <h5 class="mb-3">الصلاحيات</h5>
+            @include('admin.roles._permissions', [
+                'selected' => old('permissions', $role->permissions->pluck('id')->all()),
+                'locked' => $role->slug === 'admin',
+            ])
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">حفظ</button>
