@@ -551,6 +551,41 @@ body.bg-primary-transparent {
   background-image: var(--b-gradient) !important;
   border-color: transparent !important;
 }
+.pagination {
+  justify-content: center;
+  margin: 0;
+  flex-wrap: wrap;
+}
+.pagination .page-link {
+  min-width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px !important;
+  margin: 0 3px;
+  border: 1px solid var(--b-border) !important;
+  color: var(--b-navy) !important;
+  font-weight: 700;
+  line-height: 1;
+}
+.pagination .page-link:hover {
+  background: var(--b-primary-soft) !important;
+}
+.pagination .page-item.active .page-link {
+  color: #fff !important;
+  border-color: transparent !important;
+}
+.pagination .page-item.disabled .page-link {
+  opacity: 0.45;
+  background: #fff;
+}
+.pagination svg {
+  width: 14px !important;
+  height: 14px !important;
+  max-width: 14px !important;
+  max-height: 14px !important;
+}
 .badge { border-radius: 999px; font-weight: 600; font-size: 12px !important; }
 .badge-primary { background-image: var(--b-gradient) !important; }
 .badge-success { background-color: var(--b-success) !important; }
