@@ -2,7 +2,7 @@
 @section('page-header')
     @include('admin.partials.page-header', [
         'title' => 'العملاء',
-        'action' => '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCustomerModal"><i class="fe fe-plus ml-1"></i> إضافة عميل جديد</button>',
+        'action' => can('customers.create') ? '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCustomerModal"><i class="fe fe-plus ml-1"></i> إضافة عميل جديد</button>' : '',
     ])
 @endsection
 @section('content')
@@ -65,8 +65,8 @@
                         <div class="btn-actions">
                             <x-view-link :href="route('customers.show', $c)" title="كشف الحساب" />
                             <x-view-link :href="route('sales.index', ['customer_id' => $c->id])" title="فواتير العميل" icon="fe-file-text" class="btn-icon-print" />
-                            <x-edit-link :href="route('customers.edit', $c)" />
-                            <x-delete-form :action="route('customers.destroy', $c)" message="هل أنت متأكد من حذف هذا العميل؟ سيتم إزالة بياناته من النظام." title="حذف العميل" />
+                            @if(can('customers.update'))<x-edit-link :href="route('customers.edit', $c)" />@endif
+                            @if(can('customers.delete'))<x-delete-form :action="route('customers.destroy', $c)" message="هل أنت متأكد من حذف هذا العميل؟ سيتم إزالة بياناته من النظام." title="حذف العميل" />@endif
                         </div>
                     </td>
                 </tr>

@@ -2,7 +2,7 @@
 @section('page-header')
     @include('admin.partials.page-header', [
         'title' => 'المنتجات',
-        'action' => '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addProductModal"><i class="fe fe-plus ml-1"></i> إضافة منتج</button>',
+        'action' => can('products.create') ? '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addProductModal"><i class="fe fe-plus ml-1"></i> إضافة منتج</button>' : '',
     ])
 @endsection
 @section('content')
@@ -58,8 +58,8 @@
                     </td>
                     <td class="col-actions">
                         <div class="btn-actions">
-                            <x-edit-link :href="route('products.edit', $p)" />
-                            <x-delete-form :action="route('products.destroy', $p)" message="هل أنت متأكد من حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء." title="حذف المنتج" />
+                            @if(can('products.update'))<x-edit-link :href="route('products.edit', $p)" />@endif
+                            @if(can('products.delete'))<x-delete-form :action="route('products.destroy', $p)" message="هل أنت متأكد من حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء." title="حذف المنتج" />@endif
                         </div>
                     </td>
                 </tr>

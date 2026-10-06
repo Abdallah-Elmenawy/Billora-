@@ -3,12 +3,12 @@
     @include('admin.partials.page-header', [
         'title' => 'الخزينة',
         'subtitle' => 'إدارة الخزائن والتحصيلات والمصروفات والتحويلات',
-        'action' => '
+        'action' => can('treasury.create') ? '
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addTreasuryModal"><i class="fe fe-plus ml-1"></i> خزينة جديدة</button>
             <button type="button" class="btn btn-success" data-toggle="modal" data-target="#receiptModal"><i class="fe fe-download ml-1"></i> تحصيل من عميل</button>
             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#paymentModal"><i class="fe fe-upload ml-1"></i> صرف لمورد</button>
             <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#transferModal"><i class="fe fe-repeat ml-1"></i> تحويل بين الخزائن</button>
-        ',
+        ' : '',
     ])
 @endsection
 @section('content')

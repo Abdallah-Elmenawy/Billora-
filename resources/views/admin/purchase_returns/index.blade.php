@@ -2,7 +2,7 @@
 @section('page-header')
     @include('admin.partials.page-header', [
         'title' => 'مرتجعات المشتريات',
-        'action' => '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addPurchaseReturnModal"><i class="fe fe-plus ml-1"></i> مرتجع جديد</button>',
+        'action' => can('purchases.create') ? '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addPurchaseReturnModal"><i class="fe fe-plus ml-1"></i> مرتجع جديد</button>' : '',
     ])
 @endsection
 @section('content')
@@ -44,9 +44,9 @@
                     <td class="col-actions">
                         <div class="btn-actions">
                             <x-view-link :href="route('purchase-returns.show', $r)" title="عرض المرتجع" />
-                            @if($r->status === 'draft')
-                                <x-delete-form :action="route('purchase-returns.destroy', $r)" message="هل أنت متأكد من حذف هذا المرتجع؟" title="حذف المرتجع" />
-                            @endif
+                                @if($r->status === 'draft' && can('purchases.delete'))
+                                    <x-delete-form :action="route('purchase-returns.destroy', $r)" message="هل أنت متأكد من حذف هذا المرتجع؟" title="حذف المرتجع" />
+                                @endif
                         </div>
                     </td>
                 </tr>

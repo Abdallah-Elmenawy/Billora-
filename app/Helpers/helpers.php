@@ -50,6 +50,15 @@ if (! function_exists('invoice_status_badge')) {
     }
 }
 
+if (! function_exists('can')) {
+    function can(string $permission): bool
+    {
+        $user = auth()->user();
+
+        return $user ? $user->hasPermission($permission) : false;
+    }
+}
+
 if (! function_exists('row_no')) {
     function row_no(mixed $items, $loop): int
     {

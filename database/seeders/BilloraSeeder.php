@@ -6,13 +6,13 @@ use App\Models\Account;
 use App\Models\CompanySetting;
 use App\Models\Customer;
 use App\Models\MoneyCategory;
-use App\Models\Permission;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Role;
 use App\Models\Supplier;
 use App\Models\Treasury;
 use App\Models\User;
+use App\Support\PermissionCatalog;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -20,24 +20,7 @@ class BilloraSeeder extends Seeder
 {
     public function run(): void
     {
-        $permissions = [
-            ['name' => 'عرض لوحة التحكم', 'slug' => 'dashboard.view', 'module' => 'dashboard', 'action' => 'view'],
-            ['name' => 'عرض العملاء', 'slug' => 'customers.view', 'module' => 'customers', 'action' => 'view'],
-            ['name' => 'عرض الموردين', 'slug' => 'suppliers.view', 'module' => 'suppliers', 'action' => 'view'],
-            ['name' => 'عرض المنتجات', 'slug' => 'products.view', 'module' => 'products', 'action' => 'view'],
-            ['name' => 'عرض المخزون', 'slug' => 'inventory.view', 'module' => 'inventory', 'action' => 'view'],
-            ['name' => 'عرض المبيعات', 'slug' => 'sales.view', 'module' => 'sales', 'action' => 'view'],
-            ['name' => 'عرض المشتريات', 'slug' => 'purchases.view', 'module' => 'purchases', 'action' => 'view'],
-            ['name' => 'عرض الحسابات', 'slug' => 'accounting.view', 'module' => 'accounting', 'action' => 'view'],
-            ['name' => 'عرض الخزينة', 'slug' => 'treasury.view', 'module' => 'treasury', 'action' => 'view'],
-            ['name' => 'عرض المصروفات', 'slug' => 'expenses.view', 'module' => 'expenses', 'action' => 'view'],
-            ['name' => 'عرض التقارير', 'slug' => 'reports.view', 'module' => 'reports', 'action' => 'view'],
-            ['name' => 'عرض المستخدمين', 'slug' => 'users.view', 'module' => 'users', 'action' => 'view'],
-            ['name' => 'إعدادات النظام', 'slug' => 'settings.update', 'module' => 'settings', 'action' => 'update'],
-        ];
-        foreach ($permissions as $permission) {
-            Permission::query()->firstOrCreate(['slug' => $permission['slug']], $permission);
-        }
+        PermissionCatalog::sync();
         $adminRole = Role::query()->firstOrCreate(['slug' => 'admin'], ['name' => 'مدير النظام', 'description' => 'صلاحيات كاملة']);
         $adminRole->permissions()->sync(Permission::query()->pluck('id'));
 

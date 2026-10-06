@@ -2,7 +2,7 @@
 @section('page-header')
     @include('admin.partials.page-header', [
         'title' => 'الموردون',
-        'action' => '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addSupplierModal"><i class="fe fe-plus ml-1"></i> إضافة مورد جديد</button>',
+        'action' => can('suppliers.create') ? '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addSupplierModal"><i class="fe fe-plus ml-1"></i> إضافة مورد جديد</button>' : '',
     ])
 @endsection
 @section('content')
@@ -67,8 +67,8 @@
                         <div class="btn-actions">
                             <x-view-link :href="route('suppliers.show', $s)" title="كشف الحساب" />
                             <x-view-link :href="route('purchases.index', ['supplier_id' => $s->id])" title="فواتير المورد" icon="fe-file-text" class="btn-icon-print" />
-                            <x-edit-link :href="route('suppliers.edit', $s)" />
-                            <x-delete-form :action="route('suppliers.destroy', $s)" message="هل أنت متأكد من حذف هذا المورد؟ سيتم إزالة بياناته من النظام." title="حذف المورد" />
+                            @if(can('suppliers.update'))<x-edit-link :href="route('suppliers.edit', $s)" />@endif
+                            @if(can('suppliers.delete'))<x-delete-form :action="route('suppliers.destroy', $s)" message="هل أنت متأكد من حذف هذا المورد؟ سيتم إزالة بياناته من النظام." title="حذف المورد" />@endif
                         </div>
                     </td>
                 </tr>

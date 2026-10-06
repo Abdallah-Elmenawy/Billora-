@@ -2,7 +2,7 @@
 @section('page-header')
     @include('admin.partials.page-header', [
         'title' => 'فواتير المبيعات',
-        'action' => '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addSaleModal"><i class="fe fe-plus ml-1"></i> إنشاء فاتورة مبيعات جديدة</button>',
+        'action' => can('sales.create') ? '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addSaleModal"><i class="fe fe-plus ml-1"></i> إنشاء فاتورة مبيعات جديدة</button>' : '',
     ])
 @endsection
 @section('content')
@@ -77,10 +77,12 @@
                         <div class="btn-actions">
                             <x-view-link :href="route('sales.show', $inv)" title="عرض الفاتورة" />
                             <x-print-link :href="route('sales.print', $inv)" title="طباعة الفاتورة" />
-                            @if($inv->isEditable())
-                                <x-edit-link :href="route('sales.edit', $inv)" />
-                                <x-delete-form :action="route('sales.destroy', $inv)" message="هل أنت متأكد من حذف هذه الفاتورة؟" title="حذف الفاتورة" />
-                            @endif
+                                @if($inv->isEditable() && can('sales.update'))
+                                    <x-edit-link :href="route('sales.edit', $inv)" />
+                                @endif
+                                @if($inv->isEditable() && can('sales.delete'))
+                                    <x-delete-form :action="route('sales.destroy', $inv)" message="هل أنت متأكد من حذف هذه الفاتورة؟" title="حذف الفاتورة" />
+                                @endif
                         </div>
                     </td>
                 </tr>

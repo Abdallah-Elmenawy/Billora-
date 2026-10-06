@@ -108,7 +108,7 @@
                 <input type="hidden" name="paid_amount" id="posPaidHidden" value="0">
                 <button type="submit" class="btn btn-primary pos-pay" id="posPayBtn"
                     @disabled($customers->isEmpty())
-                    @if($customers->isEmpty()) data-locked="1" @endif
+                    @if($customers->isEmpty() || ! can('sales.create')) data-locked="1" @endif
                     data-no-treasury="{{ $treasuries->isEmpty() ? '1' : '0' }}">
                     <span id="posPayLabel">تأكيد وتحصيل</span>
                     <span class="pos-pay-total" id="posPayTotal">0.00 ج.م</span>

@@ -22,7 +22,9 @@
         </div>
         <ul class="side-menu">
             <li class="side-item side-item-category">الرئيسية</li>
+            @if(can('dashboard.view'))
             <li class="slide"><a class="side-menu__item" href="{{ route('dashboard') }}"><i class="side-menu__icon fe fe-home"></i><span class="side-menu__label">لوحة التحكم</span></a></li>
+            @endif
             @if(auth()->user()->hasPermission('sales.view'))
             <li class="slide"><a class="side-menu__item" href="{{ route('pos.index') }}"><i class="side-menu__icon fe fe-monitor"></i><span class="side-menu__label">نقطة البيع</span></a></li>
             @endif
@@ -31,7 +33,7 @@
                 <a class="side-menu__item" data-toggle="slide" href="#"><i class="side-menu__icon fe fe-users"></i><span class="side-menu__label">العملاء</span><i class="angle fe fe-chevron-down"></i></a>
                 <ul class="slide-menu">
                     <li><a class="slide-item" href="{{ route('customers.index') }}">قائمة العملاء</a></li>
-                    <li><a class="slide-item" href="{{ route('customers.create') }}">إضافة عميل</a></li>
+                    @if(can('customers.create'))<li><a class="slide-item" href="{{ route('customers.create') }}">إضافة عميل</a></li>@endif
                     <li><a class="slide-item" href="{{ route('customers.accounts') }}">حسابات العملاء</a></li>
                 </ul>
             </li>
@@ -41,7 +43,7 @@
                 <a class="side-menu__item" data-toggle="slide" href="#"><i class="side-menu__icon fe fe-truck"></i><span class="side-menu__label">الموردون</span><i class="angle fe fe-chevron-down"></i></a>
                 <ul class="slide-menu">
                     <li><a class="slide-item" href="{{ route('suppliers.index') }}">قائمة الموردين</a></li>
-                    <li><a class="slide-item" href="{{ route('suppliers.create') }}">إضافة مورد</a></li>
+                    @if(can('suppliers.create'))<li><a class="slide-item" href="{{ route('suppliers.create') }}">إضافة مورد</a></li>@endif
                     <li><a class="slide-item" href="{{ route('suppliers.accounts') }}">حسابات الموردين</a></li>
                 </ul>
             </li>
@@ -66,7 +68,7 @@
                 <ul class="slide-menu">
                     <li><a class="slide-item" href="{{ route('pos.index') }}">نقطة البيع</a></li>
                     <li><a class="slide-item" href="{{ route('sales.index') }}">فواتير المبيعات</a></li>
-                    <li><a class="slide-item" href="{{ route('sales.create') }}">إنشاء فاتورة</a></li>
+                    @if(can('sales.create'))<li><a class="slide-item" href="{{ route('sales.create') }}">إنشاء فاتورة</a></li>@endif
                     <li><a class="slide-item" href="{{ route('sales-returns.index') }}">مرتجعات المبيعات</a></li>
                 </ul>
             </li>
@@ -76,7 +78,7 @@
                 <a class="side-menu__item" data-toggle="slide" href="#"><i class="side-menu__icon fe fe-file-text"></i><span class="side-menu__label">المشتريات</span><i class="angle fe fe-chevron-down"></i></a>
                 <ul class="slide-menu">
                     <li><a class="slide-item" href="{{ route('purchases.index') }}">فواتير المشتريات</a></li>
-                    <li><a class="slide-item" href="{{ route('purchases.create') }}">إنشاء فاتورة</a></li>
+                    @if(can('purchases.create'))<li><a class="slide-item" href="{{ route('purchases.create') }}">إنشاء فاتورة</a></li>@endif
                     <li><a class="slide-item" href="{{ route('purchase-returns.index') }}">مرتجعات المشتريات</a></li>
                 </ul>
             </li>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Support\PermissionCatalog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -13,17 +14,23 @@ class RoleController extends Controller
 {
     public function index()
     {
+        PermissionCatalog::sync();
+
         return view('admin.roles.index', [
             'roles' => Role::withCount('users')->with('permissions')->latest()->get(),
-            'permissions' => Permission::query()->orderBy('module')->orderBy('name')->get()->groupBy('module'),
+            'permissions' => $this->groupedPermissions(),
+            'modules' => PermissionCatalog::modules(),
         ]);
     }
 
     public function edit(Role $role)
     {
+        PermissionCatalog::sync();
+
         return view('admin.roles.edit', [
             'role' => $role->load('permissions'),
-            'permissions' => Permission::query()->orderBy('module')->orderBy('name')->get()->groupBy('module'),
+            'permissions' => $this->groupedPermissions(),
+            'modules' => PermissionCatalog::modules(),
         ]);
     }
 
@@ -52,7 +59,11 @@ class RoleController extends Controller
             'name' => ['required', 'string', 'max:100'],
             'description' => ['nullable', 'string'],
         ]));
-        $role->permissions()->sync($request->input('permissions', []));
+        if ($role->slug === 'admin') {
+            $role->permissions()->sync(Permission::query()->pluck('id'));
+        } else {
+            $role->permissions()->sync($request->input('permissions', []));
+        }
         ActivityLog::record('users', 'update', "تعديل دور {$role->name}", $role);
 
         return redirect()->route('roles.index')->with('success', 'تم تحديث الدور.');
@@ -72,5 +83,15 @@ class RoleController extends Controller
         ActivityLog::record('users', 'delete', "حذف دور {$name}");
 
         return back()->with('success', 'تم حذف الدور.');
+    }
+
+    protected function groupedPermissions()
+    {
+        $grouped = Permission::query()->get()->groupBy('module');
+        $order = ['view' => 1, 'create' => 2, 'update' => 3, 'delete' => 4];
+
+        return collect(PermissionCatalog::modules())
+            ->map(fn ($label, $module) => ($grouped->get($module) ?? collect())->sortBy(fn ($permission) => $order[$permission->action] ?? 9)->values())
+            ->filter(fn ($items) => $items->isNotEmpty());
     }
 }

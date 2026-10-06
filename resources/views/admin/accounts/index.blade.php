@@ -2,7 +2,7 @@
 @section('page-header')
     @include('admin.partials.page-header', [
         'title' => 'دليل الحسابات',
-        'action' => '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addAccountModal"><i class="fe fe-plus ml-1"></i> حساب جديد</button>',
+        'action' => can('accounting.create') ? '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addAccountModal"><i class="fe fe-plus ml-1"></i> حساب جديد</button>' : '',
     ])
 @endsection
 @section('content')
@@ -59,10 +59,12 @@
                         </td>
                         <td class="col-actions">
                             <div class="btn-actions">
+                                @if(can('accounting.update'))
                                 <button type="submit" form="account-form-{{ $a->id }}" class="btn btn-icon-action btn-icon-edit" title="حفظ التعديل">
                                     <i class="fe fe-check"></i>
                                     <span class="sr-only">حفظ التعديل</span>
                                 </button>
+                                @endif
                             </div>
                         </td>
                     </tr>

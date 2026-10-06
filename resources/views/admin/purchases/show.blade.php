@@ -4,7 +4,7 @@
         'title' => 'فاتورة '.$invoice->number,
         'subtitle' => 'فواتير المشتريات',
         'action' => '<a href="'.route('purchases.index').'" class="btn btn-light"><i class="fe fe-arrow-right ml-1"></i> كل الفواتير</a>'
-                     .(in_array($invoice->status, ['confirmed','partial']) ? '<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#payModal"><i class="fe fe-upload ml-1"></i> صرف للمورد</button>' : '')
+                     .(in_array($invoice->status, ['confirmed','partial']) && can('purchases.update') ? '<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#payModal"><i class="fe fe-upload ml-1"></i> صرف للمورد</button>' : '')
                      .'<a class="btn btn-primary" href="'.route('purchases.print', $invoice).'" target="_blank"><i class="fe fe-printer ml-1"></i> طباعة</a>',
     ])
 @endsection
@@ -43,10 +43,12 @@
                 <div class="report-total flex-grow-1"><span>الإجمالي</span><strong>{{ money($invoice->total) }}</strong></div>
                 @if($invoice->status==='draft')
                     <div class="btn-actions">
+                        @if(can('purchases.update'))
                         <form class="d-inline" method="post" action="{{ route('purchases.confirm', $invoice) }}">@csrf<button class="btn btn-success"><i class="fe fe-check ml-1"></i> تأكيد</button></form>
                         <x-edit-link :href="route('purchases.edit', $invoice)" />
-                        <x-print-link :href="route('purchases.print', $invoice)" />
                         <form class="d-inline" method="post" action="{{ route('purchases.cancel', $invoice) }}" data-confirm="هل أنت متأكد من إلغاء هذه الفاتورة؟" data-confirm-title="إلغاء الفاتورة" data-confirm-ok="نعم، إلغاء" data-confirm-icon="fe fe-x-circle">@csrf<button class="btn btn-icon-action btn-icon-delete" title="إلغاء"><i class="fe fe-x"></i><span class="sr-only">إلغاء</span></button></form>
+                        @endif
+                        <x-print-link :href="route('purchases.print', $invoice)" />
                     </div>
                 @endif
             </div>
@@ -75,7 +77,7 @@
                     </tbody>
                 </table>
             </div>
-            @if(in_array($invoice->status, ['confirmed','partial']))
+            @if(in_array($invoice->status, ['confirmed','partial']) && can('purchases.update'))
                 <div class="card-footer text-center">
                     <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#payModal"><i class="fe fe-upload ml-1"></i> صرف للمورد</button>
                 </div>
@@ -84,7 +86,7 @@
     </div>
 </div>
 
-@if(in_array($invoice->status, ['confirmed','partial']))
+@if(in_array($invoice->status, ['confirmed','partial']) && can('purchases.update'))
 <div class="modal fade" id="payModal" tabindex="-1" role="dialog" aria-labelledby="payModalTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content border-0 shadow">
