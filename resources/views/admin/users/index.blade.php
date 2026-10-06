@@ -11,42 +11,50 @@
     $openAddModal = $errors->any();
 @endphp
 
+@php $statusBadges = ['active' => 'success', 'disabled' => 'secondary', 'suspended' => 'danger']; @endphp
 <div class="card">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th class="col-serial">#</th>
-                        <th>الاسم</th>
-                        <th>البريد</th>
-                        <th>الدور</th>
-                        <th>الحالة</th>
-                        <th class="col-actions">الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @forelse($users as $u)
-                    <tr>
-                        <td class="col-serial">{{ row_no($users, $loop) }}</td>
-                        <td>{{ $u->name }}</td>
-                        <td>{{ $u->email }}</td>
-                        <td>{{ $u->role->name ?? '-' }}</td>
-                        <td>{{ $statusLabels[$u->status] ?? $u->status }}</td>
-                        <td class="col-actions">
-                            <div class="btn-actions">
-                                <x-edit-link :href="route('users.edit', $u)" />
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr><td colspan="6" class="text-center text-muted">لا يوجد مستخدمون</td></tr>
-                @endforelse
-                </tbody>
-            </table>
-        </div>
-        <div class="mt-3">{{ $users->links() }}</div>
+    <div class="card-header">
+        <h4 class="card-title"><i class="fe fe-users"></i> المستخدمون</h4>
+        <span class="count-badge">{{ $users->total() }} مستخدم</span>
     </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0">
+            <thead>
+                <tr>
+                    <th class="col-serial">#</th>
+                    <th>الاسم</th>
+                    <th>البريد</th>
+                    <th>الدور</th>
+                    <th>الحالة</th>
+                    <th class="col-actions">الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+            @forelse($users as $u)
+                <tr>
+                    <td class="col-serial">{{ row_no($users, $loop) }}</td>
+                    <td class="cell-strong">{{ $u->name }}</td>
+                    <td dir="ltr">{{ $u->email }}</td>
+                    <td>{{ $u->role->name ?? '-' }}</td>
+                    <td><span class="badge badge-{{ $statusBadges[$u->status] ?? 'light' }}">{{ $statusLabels[$u->status] ?? $u->status }}</span></td>
+                    <td class="col-actions">
+                        <div class="btn-actions">
+                            <x-edit-link :href="route('users.edit', $u)" />
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="6" class="cell-empty text-center text-muted"><i class="fe fe-users"></i>لا يوجد مستخدمون</td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+    @if($users->hasPages())
+        <div class="card-footer table-card-footer">
+            <span class="text-muted">عرض {{ $users->firstItem() }} - {{ $users->lastItem() }} من {{ $users->total() }}</span>
+            {{ $users->withQueryString()->links() }}
+        </div>
+    @endif
 </div>
 
 <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalTitle" aria-hidden="true">

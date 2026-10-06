@@ -8,53 +8,73 @@
 @section('content')
 @php $openAddModal = $errors->any(); @endphp
 
-<div class="card">
+<div class="card filter-card mb-3">
     <div class="card-body">
-        <form class="form-inline mb-3" method="get">
-            <input name="q" value="{{ request('q') }}" class="form-control ml-2" placeholder="بحث بالاسم أو SKU">
-            <button class="btn btn-secondary">بحث</button>
+        <form method="get" class="row align-items-end">
+            <div class="col-md-10 form-group">
+                <label>بحث</label>
+                <input name="q" value="{{ request('q') }}" class="form-control" placeholder="ابحث بالاسم أو SKU...">
+            </div>
+            <div class="col-md-2 form-group">
+                <button class="btn btn-primary btn-block"><i class="fe fe-search ml-1"></i> بحث</button>
+            </div>
         </form>
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th class="col-serial">#</th>
-                        <th>SKU</th>
-                        <th>الاسم</th>
-                        <th>التصنيف</th>
-                        <th>النوع</th>
-                        <th>التكلفة</th>
-                        <th>البيع</th>
-                        <th>المخزون</th>
-                        <th class="col-actions">الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @forelse($products as $p)
-                    <tr class="{{ $p->isLowStock() ? 'table-warning' : '' }}">
-                        <td class="col-serial">{{ row_no($products, $loop) }}</td>
-                        <td>{{ $p->sku }}</td>
-                        <td>{{ $p->name }}</td>
-                        <td>{{ $p->category->name ?? '-' }}</td>
-                        <td>{{ $p->type === 'service' ? 'خدمة' : 'منتج' }}</td>
-                        <td>{{ money($p->cost_price) }}</td>
-                        <td>{{ money($p->sale_price) }}</td>
-                        <td>{{ $p->current_stock }}</td>
-                        <td class="col-actions">
-                            <div class="btn-actions">
-                                <x-edit-link :href="route('products.edit', $p)" />
-                                <x-delete-form :action="route('products.destroy', $p)" message="هل أنت متأكد من حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء." title="حذف المنتج" />
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr><td colspan="9" class="text-center text-muted">لا توجد منتجات</td></tr>
-                @endforelse
-                </tbody>
-            </table>
-        </div>
-        <div class="mt-3">{{ $products->links() }}</div>
     </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title"><i class="fe fe-package"></i> المنتجات</h4>
+        <span class="count-badge">{{ $products->total() }} منتج</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0">
+            <thead>
+                <tr>
+                    <th class="col-serial">#</th>
+                    <th>SKU</th>
+                    <th>الاسم</th>
+                    <th>التصنيف</th>
+                    <th>النوع</th>
+                    <th>التكلفة</th>
+                    <th>البيع</th>
+                    <th>المخزون</th>
+                    <th class="col-actions">الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+            @forelse($products as $p)
+                <tr class="{{ $p->isLowStock() ? 'table-warning' : '' }}">
+                    <td class="col-serial">{{ row_no($products, $loop) }}</td>
+                    <td class="text-muted">{{ $p->sku }}</td>
+                    <td class="cell-strong">{{ $p->name }}</td>
+                    <td>{{ $p->category->name ?? '-' }}</td>
+                    <td><span class="badge badge-{{ $p->type === 'service' ? 'info' : 'light' }}">{{ $p->type === 'service' ? 'خدمة' : 'منتج' }}</span></td>
+                    <td class="cell-money">{{ money($p->cost_price) }}</td>
+                    <td class="cell-money is-pos">{{ money($p->sale_price) }}</td>
+                    <td>
+                        {{ $p->current_stock }}
+                        @if($p->isLowStock())<span class="badge badge-warning mr-1">منخفض</span>@endif
+                    </td>
+                    <td class="col-actions">
+                        <div class="btn-actions">
+                            <x-edit-link :href="route('products.edit', $p)" />
+                            <x-delete-form :action="route('products.destroy', $p)" message="هل أنت متأكد من حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء." title="حذف المنتج" />
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="9" class="cell-empty text-center text-muted"><i class="fe fe-package"></i>لا توجد منتجات</td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+    @if($products->hasPages())
+        <div class="card-footer table-card-footer">
+            <span class="text-muted">عرض {{ $products->firstItem() }} - {{ $products->lastItem() }} من {{ $products->total() }}</span>
+            {{ $products->withQueryString()->links() }}
+        </div>
+    @endif
 </div>
 
 <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalTitle" aria-hidden="true">

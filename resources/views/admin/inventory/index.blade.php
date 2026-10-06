@@ -11,70 +11,94 @@
     $typeLabels = ['in' => 'إضافة', 'out' => 'صرف', 'adjust' => 'تسوية'];
 @endphp
 
+@php $typeBadges = ['in' => 'success', 'out' => 'danger', 'adjust' => 'info']; @endphp
 <div class="card mb-3">
-    <div class="card-body">
-        <h5 class="mb-3 text-right">أرصدة المنتجات</h5>
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th class="col-serial">#</th>
-                        <th>المنتج</th>
-                        <th>المخزون</th>
-                        <th>الحد</th>
-                        <th>القيمة</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @forelse($products as $p)
-                    <tr class="{{ $p->isLowStock() ? 'table-warning' : '' }}">
-                        <td class="col-serial">{{ row_no($products, $loop) }}</td>
-                        <td>{{ $p->name }}</td>
-                        <td>{{ $p->current_stock }}</td>
-                        <td>{{ $p->min_stock }}</td>
-                        <td>{{ money($p->current_stock * $p->cost_price) }}</td>
-                    </tr>
-                @empty
-                    <tr><td colspan="5" class="text-center text-muted">لا توجد منتجات</td></tr>
-                @endforelse
-                </tbody>
-            </table>
-        </div>
-        <div class="mt-3">{{ $products->links() }}</div>
+    <div class="card-header">
+        <h4 class="card-title"><i class="fe fe-package"></i> أرصدة المنتجات</h4>
+        <span class="count-badge">{{ $products->total() }} منتج</span>
     </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0">
+            <thead>
+                <tr>
+                    <th class="col-serial">#</th>
+                    <th>المنتج</th>
+                    <th>المخزون</th>
+                    <th>الحد الأدنى</th>
+                    <th>القيمة</th>
+                    <th>الحالة</th>
+                    <th class="col-actions">الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+            @forelse($products as $p)
+                <tr class="{{ $p->isLowStock() ? 'table-warning' : '' }}">
+                    <td class="col-serial">{{ row_no($products, $loop) }}</td>
+                    <td class="cell-strong">{{ $p->name }}</td>
+                    <td class="cell-strong">{{ $p->current_stock }}</td>
+                    <td class="text-muted">{{ $p->min_stock }}</td>
+                    <td class="cell-money">{{ money($p->current_stock * $p->cost_price) }}</td>
+                    <td>
+                        @if($p->current_stock <= 0)
+                            <span class="badge badge-danger">نفد</span>
+                        @elseif($p->isLowStock())
+                            <span class="badge badge-warning">منخفض</span>
+                        @else
+                            <span class="badge badge-success">متوفر</span>
+                        @endif
+                    </td>
+                    <td class="col-actions">
+                        <div class="btn-actions">
+                            <x-edit-link :href="route('products.edit', $p)" title="تعديل المنتج" />
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="7" class="cell-empty text-center text-muted"><i class="fe fe-package"></i>لا توجد منتجات</td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+    @if($products->hasPages())
+        <div class="card-footer table-card-footer">
+            <span class="text-muted">عرض {{ $products->firstItem() }} - {{ $products->lastItem() }} من {{ $products->total() }}</span>
+            {{ $products->withQueryString()->links() }}
+        </div>
+    @endif
 </div>
 
 <div class="card">
-    <div class="card-body">
-        <h5 class="mb-3 text-right">آخر الحركات</h5>
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th class="col-serial">#</th>
-                        <th>المنتج</th>
-                        <th>النوع</th>
-                        <th>الكمية</th>
-                        <th>المستخدم</th>
-                        <th>تاريخ التسجيل</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @forelse($movements as $m)
-                    <tr>
-                        <td class="col-serial">{{ row_no($movements, $loop) }}</td>
-                        <td>{{ $m->product->name ?? '-' }}</td>
-                        <td>{{ $typeLabels[$m->type] ?? $m->type }}</td>
-                        <td>{{ $m->qty }}</td>
-                        <td>{{ $m->creator->name ?? '-' }}</td>
-                        <td>{{ optional($m->created_at)->format('H:i Y-m-d') }}</td>
-                    </tr>
-                @empty
-                    <tr><td colspan="6" class="text-center text-muted">لا توجد حركات</td></tr>
-                @endforelse
-                </tbody>
-            </table>
-        </div>
+    <div class="card-header">
+        <h4 class="card-title"><i class="fe fe-activity"></i> آخر الحركات</h4>
+        <span class="count-badge">{{ $movements->count() }} حركة</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0">
+            <thead>
+                <tr>
+                    <th class="col-serial">#</th>
+                    <th>المنتج</th>
+                    <th>النوع</th>
+                    <th>الكمية</th>
+                    <th>المستخدم</th>
+                    <th>تاريخ التسجيل</th>
+                </tr>
+            </thead>
+            <tbody>
+            @forelse($movements as $m)
+                <tr>
+                    <td class="col-serial">{{ row_no($movements, $loop) }}</td>
+                    <td class="cell-strong">{{ $m->product->name ?? '-' }}</td>
+                    <td><span class="badge badge-{{ $typeBadges[$m->type] ?? 'light' }}">{{ $typeLabels[$m->type] ?? $m->type }}</span></td>
+                    <td class="cell-strong">{{ $m->qty }}</td>
+                    <td>{{ $m->creator->name ?? '-' }}</td>
+                    <td class="text-muted">{{ optional($m->created_at)->format('H:i Y-m-d') }}</td>
+                </tr>
+            @empty
+                <tr><td colspan="6" class="cell-empty text-center text-muted"><i class="fe fe-activity"></i>لا توجد حركات</td></tr>
+            @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
 

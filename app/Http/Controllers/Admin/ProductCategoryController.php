@@ -11,7 +11,7 @@ class ProductCategoryController extends Controller
     public function index()
     {
         return view('admin.categories.index', [
-            'categories' => ProductCategory::query()->latest()->paginate(20),
+            'categories' => ProductCategory::query()->withCount('products')->latest()->paginate(20),
         ]);
     }
 

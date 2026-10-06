@@ -8,63 +8,82 @@
 @section('content')
 @php $openAddModal = old('_form') === 'supplier'; @endphp
 
-<div class="card">
+<div class="card filter-card mb-3">
     <div class="card-body">
-        <form class="form-inline mb-3" method="get">
-            <input name="q" value="{{ request('q') }}" class="form-control ml-2" placeholder="ابحث بالاسم أو رقم الموبايل...">
-            <select name="status" class="form-control ml-2">
-                <option value="">كل الحالات</option>
-                <option value="active" @selected(request('status')==='active')>نشط</option>
-                <option value="inactive" @selected(request('status')==='inactive')>غير نشط</option>
-            </select>
-            <button class="btn btn-primary">بحث</button>
+        <form method="get" class="row align-items-end">
+            <div class="col-md-7 form-group">
+                <label>بحث</label>
+                <input name="q" value="{{ request('q') }}" class="form-control" placeholder="ابحث بالاسم أو رقم الموبايل...">
+            </div>
+            <div class="col-md-3 form-group">
+                <label>الحالة</label>
+                <select name="status" class="form-control">
+                    <option value="">كل الحالات</option>
+                    <option value="active" @selected(request('status')==='active')>نشط</option>
+                    <option value="inactive" @selected(request('status')==='inactive')>غير نشط</option>
+                </select>
+            </div>
+            <div class="col-md-2 form-group">
+                <button class="btn btn-primary btn-block"><i class="fe fe-search ml-1"></i> بحث</button>
+            </div>
         </form>
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th class="col-serial">#</th>
-                        <th>الكود</th>
-                        <th>اسم المورد</th>
-                        <th>الموبايل</th>
-                        <th>العنوان</th>
-                        <th>السجل التجاري</th>
-                        <th>الرصيد</th>
-                        <th>أضيف بواسطة</th>
-                        <th>تاريخ الإضافة</th>
-                        <th class="col-actions">الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @forelse($suppliers as $s)
-                    <tr>
-                        <td class="col-serial">{{ row_no($suppliers, $loop) }}</td>
-                        <td>{{ $s->code }}</td>
-                        <td><a href="{{ route('suppliers.show', $s) }}">{{ $s->name }}</a></td>
-                        <td>{{ $s->phone ?: '-' }}</td>
-                        <td>{{ $s->address ?: '-' }}</td>
-                        <td>{{ $s->tax_number ?: '-' }}</td>
-                        <td>{{ money($s->current_balance) }}</td>
-                        <td>{{ $s->creator->name ?? 'غير محدد' }}</td>
-                        <td>{{ optional($s->created_at)->format('Y-m-d') }}</td>
-                        <td class="col-actions">
-                            <div class="btn-actions">
-                                <a href="{{ route('purchases.index', ['supplier_id' => $s->id]) }}" class="btn btn-icon-action btn-icon-view" title="فاتورة وارد">
-                                    <i class="fe fe-file-plus"></i><span class="sr-only">فاتورة وارد</span>
-                                </a>
-                                <x-edit-link :href="route('suppliers.edit', $s)" />
-                                <x-delete-form :action="route('suppliers.destroy', $s)" message="هل أنت متأكد من حذف هذا المورد؟ سيتم إزالة بياناته من النظام." title="حذف المورد" />
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr><td colspan="10" class="text-center text-muted">لا يوجد موردون</td></tr>
-                @endforelse
-                </tbody>
-            </table>
-        </div>
-        <div class="mt-3">{{ $suppliers->links() }}</div>
     </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title"><i class="fe fe-briefcase"></i> الموردون</h4>
+        <span class="count-badge">{{ $suppliers->total() }} مورد</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0">
+            <thead>
+                <tr>
+                    <th class="col-serial">#</th>
+                    <th>الكود</th>
+                    <th>اسم المورد</th>
+                    <th>الموبايل</th>
+                    <th>العنوان</th>
+                    <th>السجل التجاري</th>
+                    <th>الرصيد</th>
+                    <th>أضيف بواسطة</th>
+                    <th>تاريخ الإضافة</th>
+                    <th class="col-actions">الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+            @forelse($suppliers as $s)
+                <tr>
+                    <td class="col-serial">{{ row_no($suppliers, $loop) }}</td>
+                    <td class="text-muted">{{ $s->code }}</td>
+                    <td class="cell-strong"><a href="{{ route('suppliers.show', $s) }}">{{ $s->name }}</a></td>
+                    <td dir="ltr">{{ $s->phone ?: '-' }}</td>
+                    <td>{{ $s->address ?: '-' }}</td>
+                    <td>{{ $s->tax_number ?: '-' }}</td>
+                    <td class="cell-money {{ $s->current_balance > 0 ? 'is-neg' : '' }}">{{ money($s->current_balance) }}</td>
+                    <td>{{ $s->creator->name ?? 'غير محدد' }}</td>
+                    <td class="text-muted">{{ optional($s->created_at)->format('Y-m-d') }}</td>
+                    <td class="col-actions">
+                        <div class="btn-actions">
+                            <x-view-link :href="route('suppliers.show', $s)" title="كشف الحساب" />
+                            <x-view-link :href="route('purchases.index', ['supplier_id' => $s->id])" title="فواتير المورد" icon="fe-file-text" class="btn-icon-print" />
+                            <x-edit-link :href="route('suppliers.edit', $s)" />
+                            <x-delete-form :action="route('suppliers.destroy', $s)" message="هل أنت متأكد من حذف هذا المورد؟ سيتم إزالة بياناته من النظام." title="حذف المورد" />
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="10" class="cell-empty text-center text-muted"><i class="fe fe-briefcase"></i>لا يوجد موردون</td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+    @if($suppliers->hasPages())
+        <div class="card-footer table-card-footer">
+            <span class="text-muted">عرض {{ $suppliers->firstItem() }} - {{ $suppliers->lastItem() }} من {{ $suppliers->total() }}</span>
+            {{ $suppliers->withQueryString()->links() }}
+        </div>
+    @endif
 </div>
 
 <div class="modal fade" id="addSupplierModal" tabindex="-1" role="dialog" aria-labelledby="addSupplierModalTitle" aria-hidden="true">

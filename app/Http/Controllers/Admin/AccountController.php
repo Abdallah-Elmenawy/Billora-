@@ -13,7 +13,7 @@ class AccountController extends Controller
     public function index()
     {
         return view('admin.accounts.index', [
-            'accounts' => Account::query()->orderBy('code')->get(),
+            'accounts' => Account::query()->with('parent')->orderBy('code')->get(),
         ]);
     }
 

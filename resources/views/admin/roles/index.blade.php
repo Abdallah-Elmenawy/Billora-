@@ -9,42 +9,44 @@
 @php $openAddModal = $errors->any(); @endphp
 
 <div class="card">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th class="col-serial">#</th>
-                        <th>اسم الدور</th>
-                        <th>الوصف</th>
-                        <th>الصلاحيات</th>
-                        <th>المستخدمون</th>
-                        <th class="col-actions">الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @forelse($roles as $role)
-                    <tr>
-                        <td class="col-serial">{{ row_no($roles, $loop) }}</td>
-                        <td>{{ $role->name }}</td>
-                        <td>{{ $role->description ?: '-' }}</td>
-                        <td>{{ $role->permissions->count() }}</td>
-                        <td>{{ $role->users_count }}</td>
-                        <td class="col-actions">
-                            <div class="btn-actions">
-                                <x-edit-link :href="route('roles.edit', $role)" />
-                                @if($role->slug !== 'admin')
-                                    <x-delete-form :action="route('roles.destroy', $role)" message="هل أنت متأكد من حذف هذا الدور؟" title="حذف الدور" />
-                                @endif
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr><td colspan="6" class="text-center text-muted">لا توجد أدوار بعد. أضف دورًا ثم أنشئ مستخدمًا.</td></tr>
-                @endforelse
-                </tbody>
-            </table>
-        </div>
+    <div class="card-header">
+        <h4 class="card-title"><i class="fe fe-shield"></i> الأدوار</h4>
+        <span class="count-badge">{{ $roles->count() }} دور</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0">
+            <thead>
+                <tr>
+                    <th class="col-serial">#</th>
+                    <th>اسم الدور</th>
+                    <th>الوصف</th>
+                    <th>الصلاحيات</th>
+                    <th>المستخدمون</th>
+                    <th class="col-actions">الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+            @forelse($roles as $role)
+                <tr>
+                    <td class="col-serial">{{ row_no($roles, $loop) }}</td>
+                    <td class="cell-strong">{{ $role->name }}</td>
+                    <td>{{ $role->description ?: '-' }}</td>
+                    <td><span class="badge badge-info">{{ $role->permissions->count() }} صلاحية</span></td>
+                    <td><span class="badge badge-light">{{ $role->users_count }} مستخدم</span></td>
+                    <td class="col-actions">
+                        <div class="btn-actions">
+                            <x-edit-link :href="route('roles.edit', $role)" />
+                            @if($role->slug !== 'admin')
+                                <x-delete-form :action="route('roles.destroy', $role)" message="هل أنت متأكد من حذف هذا الدور؟" title="حذف الدور" />
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="6" class="cell-empty text-center text-muted"><i class="fe fe-shield"></i>لا توجد أدوار بعد. أضف دورًا ثم أنشئ مستخدمًا.</td></tr>
+            @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
 
