@@ -8,61 +8,80 @@
 @section('content')
 @php $openAddModal = old('_form') === 'customer'; @endphp
 
-<div class="card">
+<div class="card filter-card mb-3">
     <div class="card-body">
-        <form class="form-inline mb-3" method="get">
-            <input name="q" value="{{ request('q') }}" class="form-control ml-2" placeholder="أدخل جزء من الاسم أو الموبايل...">
-            <select name="status" class="form-control ml-2">
-                <option value="">كل الحالات</option>
-                <option value="active" @selected(request('status')==='active')>نشط</option>
-                <option value="inactive" @selected(request('status')==='inactive')>غير نشط</option>
-            </select>
-            <button class="btn btn-primary">بحث</button>
+        <form method="get" class="row align-items-end">
+            <div class="col-md-7 form-group">
+                <label>بحث</label>
+                <input name="q" value="{{ request('q') }}" class="form-control" placeholder="أدخل جزء من الاسم أو الموبايل...">
+            </div>
+            <div class="col-md-3 form-group">
+                <label>الحالة</label>
+                <select name="status" class="form-control">
+                    <option value="">كل الحالات</option>
+                    <option value="active" @selected(request('status')==='active')>نشط</option>
+                    <option value="inactive" @selected(request('status')==='inactive')>غير نشط</option>
+                </select>
+            </div>
+            <div class="col-md-2 form-group">
+                <button class="btn btn-primary btn-block"><i class="fe fe-search ml-1"></i> بحث</button>
+            </div>
         </form>
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th class="col-serial">#</th>
-                        <th>الكود</th>
-                        <th>اسم العميل</th>
-                        <th>الموبايل</th>
-                        <th>العنوان</th>
-                        <th>الرصيد</th>
-                        <th>أضيف بواسطة</th>
-                        <th>تاريخ الإضافة</th>
-                        <th class="col-actions">الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @forelse($customers as $c)
-                    <tr>
-                        <td class="col-serial">{{ row_no($customers, $loop) }}</td>
-                        <td>{{ $c->code }}</td>
-                        <td><a href="{{ route('customers.show', $c) }}">{{ $c->name }}</a></td>
-                        <td>{{ $c->phone ?: '-' }}</td>
-                        <td>{{ $c->address ?: '-' }}</td>
-                        <td>{{ money($c->current_balance) }}</td>
-                        <td>{{ $c->creator->name ?? 'غير محدد' }}</td>
-                        <td>{{ optional($c->created_at)->format('Y-m-d') }}</td>
-                        <td class="col-actions">
-                            <div class="btn-actions">
-                                <a href="{{ route('sales.index') }}" class="btn btn-icon-action btn-icon-view" title="إنشاء فاتورة">
-                                    <i class="fe fe-file-plus"></i><span class="sr-only">إنشاء فاتورة</span>
-                                </a>
-                                <x-edit-link :href="route('customers.edit', $c)" />
-                                <x-delete-form :action="route('customers.destroy', $c)" message="هل أنت متأكد من حذف هذا العميل؟ سيتم إزالة بياناته من النظام." title="حذف العميل" />
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr><td colspan="9" class="text-center text-muted">لا يوجد عملاء</td></tr>
-                @endforelse
-                </tbody>
-            </table>
-        </div>
-        <div class="mt-3">{{ $customers->links() }}</div>
     </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title"><i class="fe fe-users"></i> العملاء</h4>
+        <span class="count-badge">{{ $customers->total() }} عميل</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0">
+            <thead>
+                <tr>
+                    <th class="col-serial">#</th>
+                    <th>الكود</th>
+                    <th>اسم العميل</th>
+                    <th>الموبايل</th>
+                    <th>العنوان</th>
+                    <th>الرصيد</th>
+                    <th>أضيف بواسطة</th>
+                    <th>تاريخ الإضافة</th>
+                    <th class="col-actions">الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+            @forelse($customers as $c)
+                <tr>
+                    <td class="col-serial">{{ row_no($customers, $loop) }}</td>
+                    <td class="text-muted">{{ $c->code }}</td>
+                    <td class="cell-strong"><a href="{{ route('customers.show', $c) }}">{{ $c->name }}</a></td>
+                    <td dir="ltr">{{ $c->phone ?: '-' }}</td>
+                    <td>{{ $c->address ?: '-' }}</td>
+                    <td class="cell-money {{ $c->current_balance > 0 ? 'is-neg' : '' }}">{{ money($c->current_balance) }}</td>
+                    <td>{{ $c->creator->name ?? 'غير محدد' }}</td>
+                    <td class="text-muted">{{ optional($c->created_at)->format('Y-m-d') }}</td>
+                    <td class="col-actions">
+                        <div class="btn-actions">
+                            <x-view-link :href="route('customers.show', $c)" title="كشف الحساب" />
+                            <x-view-link :href="route('sales.index', ['customer_id' => $c->id])" title="فواتير العميل" icon="fe-file-text" class="btn-icon-print" />
+                            <x-edit-link :href="route('customers.edit', $c)" />
+                            <x-delete-form :action="route('customers.destroy', $c)" message="هل أنت متأكد من حذف هذا العميل؟ سيتم إزالة بياناته من النظام." title="حذف العميل" />
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="9" class="cell-empty text-center text-muted"><i class="fe fe-users"></i>لا يوجد عملاء</td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+    @if($customers->hasPages())
+        <div class="card-footer table-card-footer">
+            <span class="text-muted">عرض {{ $customers->firstItem() }} - {{ $customers->lastItem() }} من {{ $customers->total() }}</span>
+            {{ $customers->withQueryString()->links() }}
+        </div>
+    @endif
 </div>
 
 <div class="modal fade" id="addCustomerModal" tabindex="-1" role="dialog" aria-labelledby="addCustomerModalTitle" aria-hidden="true">

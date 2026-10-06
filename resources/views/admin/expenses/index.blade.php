@@ -12,48 +12,55 @@
 @endphp
 
 <div class="card">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th class="col-serial">#</th>
-                        <th>الرقم</th>
-                        <th>النوع</th>
-                        <th>التصنيف</th>
-                        <th>الخزينة</th>
-                        <th>المبلغ</th>
-                        <th>التاريخ</th>
-                        <th>تاريخ التسجيل</th>
-                        <th class="col-actions">الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @forelse($entries as $e)
-                    <tr>
-                        <td class="col-serial">{{ row_no($entries, $loop) }}</td>
-                        <td>{{ $e->number }}</td>
-                        <td>{{ $e->type === 'expense' ? 'مصروف' : 'إيراد' }}</td>
-                        <td>{{ $e->category->name ?? '-' }}</td>
-                        <td>{{ $e->treasury->name ?? '-' }}</td>
-                        <td>{{ money($e->amount) }}</td>
-                        <td>{{ optional($e->entry_date)->format('Y-m-d') }}</td>
-                        <td>{{ optional($e->created_at)->format('H:i Y-m-d') }}</td>
-                        <td class="col-actions">
-                            <div class="btn-actions">
-                                <x-edit-link :href="route('expenses.edit', $e)" />
-                                <x-delete-form :action="route('expenses.destroy', $e)" message="هل أنت متأكد من حذف هذه العملية؟ سيتم التراجع عن تأثيرها على الخزينة." title="حذف العملية" />
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr><td colspan="9" class="text-center text-muted">لا توجد عمليات</td></tr>
-                @endforelse
-                </tbody>
-            </table>
-        </div>
-        <div class="mt-3">{{ $entries->links() }}</div>
+    <div class="card-header">
+        <h4 class="card-title"><i class="fe fe-dollar-sign"></i> المصروفات والإيرادات</h4>
+        <span class="count-badge">{{ $entries->total() }} عملية</span>
     </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0">
+            <thead>
+                <tr>
+                    <th class="col-serial">#</th>
+                    <th>الرقم</th>
+                    <th>النوع</th>
+                    <th>التصنيف</th>
+                    <th>الخزينة</th>
+                    <th>المبلغ</th>
+                    <th>التاريخ</th>
+                    <th>تاريخ التسجيل</th>
+                    <th class="col-actions">الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+            @forelse($entries as $e)
+                <tr>
+                    <td class="col-serial">{{ row_no($entries, $loop) }}</td>
+                    <td class="cell-strong">{{ $e->number }}</td>
+                    <td><span class="badge badge-{{ $e->type === 'expense' ? 'danger' : 'success' }}">{{ $e->type === 'expense' ? 'مصروف' : 'إيراد' }}</span></td>
+                    <td>{{ $e->category->name ?? '-' }}</td>
+                    <td>{{ $e->treasury->name ?? '-' }}</td>
+                    <td class="cell-money {{ $e->type === 'expense' ? 'is-neg' : 'is-pos' }}">{{ money($e->amount) }}</td>
+                    <td>{{ optional($e->entry_date)->format('Y-m-d') }}</td>
+                    <td class="text-muted">{{ optional($e->created_at)->format('H:i Y-m-d') }}</td>
+                    <td class="col-actions">
+                        <div class="btn-actions">
+                            <x-edit-link :href="route('expenses.edit', $e)" />
+                            <x-delete-form :action="route('expenses.destroy', $e)" message="هل أنت متأكد من حذف هذه العملية؟ سيتم التراجع عن تأثيرها على الخزينة." title="حذف العملية" />
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="9" class="cell-empty text-center text-muted"><i class="fe fe-dollar-sign"></i>لا توجد عمليات</td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+    @if($entries->hasPages())
+        <div class="card-footer table-card-footer">
+            <span class="text-muted">عرض {{ $entries->firstItem() }} - {{ $entries->lastItem() }} من {{ $entries->total() }}</span>
+            {{ $entries->withQueryString()->links() }}
+        </div>
+    @endif
 </div>
 
 <div class="modal fade" id="addEntryModal" tabindex="-1" role="dialog" aria-labelledby="addEntryModalTitle" aria-hidden="true">

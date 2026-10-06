@@ -49,51 +49,59 @@
         </div>
         <div class="col-xl-6">
             <div class="card">
-                <div class="card-header"><h4 class="card-title mb-0">آخر فواتير المبيعات</h4></div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead><tr><th class="col-serial">#</th><th>الرقم</th><th>العميل</th><th>الإجمالي</th><th>الحالة</th></tr></thead>
-                            <tbody>
-                            @forelse($latestSales as $inv)
-                                <tr>
-                                    <td class="col-serial">{{ row_no($latestSales, $loop) }}</td>
-                                    <td><a href="{{ route('sales.show', $inv) }}">{{ $inv->number }}</a></td>
-                                    <td>{{ $inv->customer->name ?? '-' }}</td>
-                                    <td>{{ money($inv->total) }}</td>
-                                    <td><span class="badge badge-{{ invoice_status_badge($inv->status) }}">{{ invoice_status_label($inv->status) }}</span></td>
-                                </tr>
-                            @empty
-                                <tr><td colspan="5" class="text-center text-muted">لا توجد فواتير بعد</td></tr>
-                            @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="card-header">
+                    <h4 class="card-title mb-0"><i class="fe fe-shopping-cart"></i> آخر فواتير المبيعات</h4>
+                    <a href="{{ route('sales.index') }}" class="count-badge">عرض الكل</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead><tr><th class="col-serial">#</th><th>الرقم</th><th>العميل</th><th>الإجمالي</th><th>الحالة</th><th class="col-actions">الإجراءات</th></tr></thead>
+                        <tbody>
+                        @forelse($latestSales as $inv)
+                            <tr>
+                                <td class="col-serial">{{ row_no($latestSales, $loop) }}</td>
+                                <td class="cell-strong"><a href="{{ route('sales.show', $inv) }}">{{ $inv->number }}</a></td>
+                                <td>{{ $inv->customer->name ?? '-' }}</td>
+                                <td class="cell-money">{{ money($inv->total) }}</td>
+                                <td><span class="badge badge-{{ invoice_status_badge($inv->status) }}">{{ invoice_status_label($inv->status) }}</span></td>
+                                <td class="col-actions">
+                                    <div class="btn-actions">
+                                        <x-view-link :href="route('sales.show', $inv)" title="عرض الفاتورة" />
+                                        <x-print-link :href="route('sales.print', $inv)" />
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="6" class="cell-empty text-center text-muted"><i class="fe fe-file-text"></i>لا توجد فواتير بعد</td></tr>
+                        @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
         <div class="col-xl-6">
             <div class="card">
-                <div class="card-header"><h4 class="card-title mb-0">آخر التحصيلات والمدفوعات</h4></div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead><tr><th class="col-serial">#</th><th>النوع</th><th>الطرف</th><th>المبلغ</th><th>الخزينة</th></tr></thead>
-                            <tbody>
-                            @forelse($latestPayments as $pay)
-                                <tr>
-                                    <td class="col-serial">{{ row_no($latestPayments, $loop) }}</td>
-                                    <td>{{ $pay->type === 'receipt' ? 'تحصيل' : 'صرف' }}</td>
-                                    <td>{{ $pay->party->name ?? '-' }}</td>
-                                    <td>{{ money($pay->amount) }}</td>
-                                    <td>{{ $pay->treasury->name ?? '-' }}</td>
-                                </tr>
-                            @empty
-                                <tr><td colspan="5" class="text-center text-muted">لا توجد حركات</td></tr>
-                            @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="card-header">
+                    <h4 class="card-title mb-0"><i class="fe fe-credit-card"></i> آخر التحصيلات والمدفوعات</h4>
+                    <a href="{{ route('treasury.index') }}" class="count-badge">الخزينة</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead><tr><th class="col-serial">#</th><th>النوع</th><th>الطرف</th><th>المبلغ</th><th>الخزينة</th></tr></thead>
+                        <tbody>
+                        @forelse($latestPayments as $pay)
+                            <tr>
+                                <td class="col-serial">{{ row_no($latestPayments, $loop) }}</td>
+                                <td><span class="badge badge-{{ $pay->type === 'receipt' ? 'success' : 'danger' }}">{{ $pay->type === 'receipt' ? 'تحصيل' : 'صرف' }}</span></td>
+                                <td>{{ $pay->party->name ?? '-' }}</td>
+                                <td class="cell-money {{ $pay->type === 'receipt' ? 'is-pos' : 'is-neg' }}">{{ money($pay->amount) }}</td>
+                                <td>{{ $pay->treasury->name ?? '-' }}</td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="5" class="cell-empty text-center text-muted"><i class="fe fe-credit-card"></i>لا توجد حركات</td></tr>
+                        @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

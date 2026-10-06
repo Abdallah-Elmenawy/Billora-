@@ -49,40 +49,47 @@
 @endphp
 
 <div class="card">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th class="col-serial">#</th>
-                        <th>الوصف</th>
-                        <th>الوحدة</th>
-                        <th>الإجراء</th>
-                        <th>المستخدم</th>
-                        <th>التاريخ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @forelse($logs as $log)
-                    <tr>
-                        <td class="col-serial">{{ row_no($logs, $loop) }}</td>
-                        <td>{{ $log->description }}</td>
-                        <td>{{ $moduleLabels[$log->module] ?? $log->module }}</td>
-                        <td>
-                            <span class="badge badge-{{ $actionBadges[$log->action] ?? 'light' }}">
-                                {{ $actionLabels[$log->action] ?? $log->action }}
-                            </span>
-                        </td>
-                        <td>{{ $log->user->name ?? 'غير محدد' }}</td>
-                        <td>{{ optional($log->created_at)->format('H:i Y-m-d') }}</td>
-                    </tr>
-                @empty
-                    <tr><td colspan="6" class="text-center text-muted">لا توجد عمليات مسجلة</td></tr>
-                @endforelse
-                </tbody>
-            </table>
-        </div>
-        <div class="mt-3">{{ $logs->links() }}</div>
+    <div class="card-header">
+        <h4 class="card-title"><i class="fe fe-clock"></i> سجل العمليات</h4>
+        <span class="count-badge">{{ $logs->total() }} عملية</span>
     </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0">
+            <thead>
+                <tr>
+                    <th class="col-serial">#</th>
+                    <th>الوصف</th>
+                    <th>الوحدة</th>
+                    <th>الإجراء</th>
+                    <th>المستخدم</th>
+                    <th>التاريخ</th>
+                </tr>
+            </thead>
+            <tbody>
+            @forelse($logs as $log)
+                <tr>
+                    <td class="col-serial">{{ row_no($logs, $loop) }}</td>
+                    <td class="text-right">{{ $log->description }}</td>
+                    <td>{{ $moduleLabels[$log->module] ?? $log->module }}</td>
+                    <td>
+                        <span class="badge badge-{{ $actionBadges[$log->action] ?? 'light' }}">
+                            {{ $actionLabels[$log->action] ?? $log->action }}
+                        </span>
+                    </td>
+                    <td>{{ $log->user->name ?? 'غير محدد' }}</td>
+                    <td class="text-muted">{{ optional($log->created_at)->format('H:i Y-m-d') }}</td>
+                </tr>
+            @empty
+                <tr><td colspan="6" class="cell-empty text-center text-muted"><i class="fe fe-clock"></i>لا توجد عمليات مسجلة</td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+    @if($logs->hasPages())
+        <div class="card-footer table-card-footer">
+            <span class="text-muted">عرض {{ $logs->firstItem() }} - {{ $logs->lastItem() }} من {{ $logs->total() }}</span>
+            {{ $logs->withQueryString()->links() }}
+        </div>
+    @endif
 </div>
 @endsection

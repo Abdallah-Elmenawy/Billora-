@@ -8,90 +8,94 @@
 @section('content')
 @php $openAddModal = old('_form') === 'sale'; @endphp
 
-<div class="card mb-3">
+<div class="card filter-card mb-3">
     <div class="card-body">
-        <form method="get">
-            <div class="row align-items-end">
-                <div class="col-md-4 form-group mb-md-0">
-                    <label>تصفية حسب العميل</label>
-                    <select name="customer_id" class="form-control">
-                        <option value="">كل العملاء</option>
-                        @foreach($customers as $c)
-                            <option value="{{ $c->id }}" @selected(request('customer_id') == $c->id)>{{ $c->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-4 form-group mb-md-0">
-                    <label>تصفية حسب الحالة</label>
-                    <select name="status" class="form-control">
-                        <option value="">كل الحالات</option>
-                        @foreach(['draft','confirmed','partial','paid','cancelled'] as $st)
-                            <option value="{{ $st }}" @selected(request('status') === $st)>{{ invoice_status_label($st) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-4 form-group mb-md-0">
-                    <label>رقم الفاتورة</label>
-                    <div class="d-flex">
-                        <input name="q" value="{{ request('q') }}" class="form-control ml-2" placeholder="بحث">
-                        <button class="btn btn-primary">تصفية</button>
-                    </div>
-                </div>
+        <form method="get" class="row align-items-end">
+            <div class="col-md-3 form-group">
+                <label>العميل</label>
+                <select name="customer_id" class="form-control">
+                    <option value="">كل العملاء</option>
+                    @foreach($customers as $c)
+                        <option value="{{ $c->id }}" @selected(request('customer_id') == $c->id)>{{ $c->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-3 form-group">
+                <label>الحالة</label>
+                <select name="status" class="form-control">
+                    <option value="">كل الحالات</option>
+                    @foreach(['draft','confirmed','partial','paid','cancelled'] as $st)
+                        <option value="{{ $st }}" @selected(request('status') === $st)>{{ invoice_status_label($st) }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-4 form-group">
+                <label>رقم الفاتورة</label>
+                <input name="q" value="{{ request('q') }}" class="form-control" placeholder="ابحث برقم الفاتورة...">
+            </div>
+            <div class="col-md-2 form-group">
+                <button class="btn btn-primary btn-block"><i class="fe fe-filter ml-1"></i> تصفية</button>
             </div>
         </form>
     </div>
 </div>
 
 <div class="card">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th class="col-serial">#</th>
-                        <th>الرقم</th>
-                        <th>اسم العميل</th>
-                        <th>تاريخ البيع</th>
-                        <th>الحالة</th>
-                        <th>الإجمالي</th>
-                        <th>المتبقي</th>
-                        <th>أنشئت بواسطة</th>
-                        <th>تاريخ الإنشاء</th>
-                        <th class="col-actions">الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @forelse($invoices as $inv)
-                    <tr>
-                        <td class="col-serial">{{ row_no($invoices, $loop) }}</td>
-                        <td>{{ $inv->number }}</td>
-                        <td>{{ $inv->customer->name ?? '-' }}</td>
-                        <td>{{ optional($inv->invoice_date)->format('Y-m-d') }}</td>
-                        <td><span class="badge badge-{{ invoice_status_badge($inv->status) }}">{{ invoice_status_label($inv->status) }}</span></td>
-                        <td>{{ money($inv->total) }}</td>
-                        <td>{{ money($inv->remaining) }}</td>
-                        <td>{{ $inv->creator->name ?? 'غير محدد' }}</td>
-                        <td>{{ optional($inv->created_at)->format('H:i Y-m-d') }}</td>
-                        <td class="col-actions">
-                            <div class="btn-actions">
-                                <a href="{{ route('sales.show', $inv) }}" class="btn btn-icon-action btn-icon-view" title="البنود">
-                                    <i class="fe fe-eye"></i><span class="sr-only">البنود</span>
-                                </a>
-                                @if($inv->isEditable())
-                                    <x-edit-link :href="route('sales.edit', $inv)" />
-                                    <x-delete-form :action="route('sales.destroy', $inv)" message="هل أنت متأكد من حذف هذه الفاتورة؟" title="حذف الفاتورة" />
-                                @endif
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr><td colspan="10" class="text-center text-muted">لا توجد فواتير</td></tr>
-                @endforelse
-                </tbody>
-            </table>
-        </div>
-        <div class="mt-3">{{ $invoices->links() }}</div>
+    <div class="card-header">
+        <h4 class="card-title"><i class="fe fe-shopping-cart"></i> فواتير المبيعات</h4>
+        <span class="count-badge">{{ $invoices->total() }} فاتورة</span>
     </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0">
+            <thead>
+                <tr>
+                    <th class="col-serial">#</th>
+                    <th>الرقم</th>
+                    <th>اسم العميل</th>
+                    <th>تاريخ البيع</th>
+                    <th>الحالة</th>
+                    <th>الإجمالي</th>
+                    <th>المتبقي</th>
+                    <th>أنشئت بواسطة</th>
+                    <th>تاريخ الإنشاء</th>
+                    <th class="col-actions">الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+            @forelse($invoices as $inv)
+                <tr>
+                    <td class="col-serial">{{ row_no($invoices, $loop) }}</td>
+                    <td class="cell-strong">{{ $inv->number }}</td>
+                    <td>{{ $inv->customer->name ?? '-' }}</td>
+                    <td>{{ optional($inv->invoice_date)->format('Y-m-d') }}</td>
+                    <td><span class="badge badge-{{ invoice_status_badge($inv->status) }}">{{ invoice_status_label($inv->status) }}</span></td>
+                    <td class="cell-money">{{ money($inv->total) }}</td>
+                    <td class="cell-money {{ $inv->remaining > 0 ? 'is-neg' : '' }}">{{ money($inv->remaining) }}</td>
+                    <td>{{ $inv->creator->name ?? 'غير محدد' }}</td>
+                    <td class="text-muted">{{ optional($inv->created_at)->format('H:i Y-m-d') }}</td>
+                    <td class="col-actions">
+                        <div class="btn-actions">
+                            <x-view-link :href="route('sales.show', $inv)" title="عرض الفاتورة" />
+                            <x-print-link :href="route('sales.print', $inv)" title="طباعة الفاتورة" />
+                            @if($inv->isEditable())
+                                <x-edit-link :href="route('sales.edit', $inv)" />
+                                <x-delete-form :action="route('sales.destroy', $inv)" message="هل أنت متأكد من حذف هذه الفاتورة؟" title="حذف الفاتورة" />
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="10" class="cell-empty text-center text-muted"><i class="fe fe-file-text"></i>لا توجد فواتير</td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+    @if($invoices->hasPages())
+        <div class="card-footer table-card-footer">
+            <span class="text-muted">عرض {{ $invoices->firstItem() }} - {{ $invoices->lastItem() }} من {{ $invoices->total() }}</span>
+            {{ $invoices->withQueryString()->links() }}
+        </div>
+    @endif
 </div>
 
 <div class="card mt-3">

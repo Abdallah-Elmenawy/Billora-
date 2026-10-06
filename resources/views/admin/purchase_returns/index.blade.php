@@ -9,54 +9,59 @@
 @php $openAddModal = old('_form') === 'purchase_return'; @endphp
 
 <div class="card">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th class="col-serial">#</th>
-                        <th>الرقم</th>
-                        <th>المورد</th>
-                        <th>الفاتورة</th>
-                        <th>التاريخ</th>
-                        <th>الإجمالي</th>
-                        <th>الحالة</th>
-                        <th>أنشئت بواسطة</th>
-                        <th>تاريخ الإنشاء</th>
-                        <th class="col-actions">الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @forelse($returns as $r)
-                    <tr>
-                        <td class="col-serial">{{ row_no($returns, $loop) }}</td>
-                        <td>{{ $r->number }}</td>
-                        <td>{{ $r->supplier->name ?? '-' }}</td>
-                        <td>{{ $r->invoice->number ?? '-' }}</td>
-                        <td>{{ optional($r->return_date)->format('Y-m-d') }}</td>
-                        <td>{{ money($r->total) }}</td>
-                        <td><span class="badge badge-{{ invoice_status_badge($r->status) }}">{{ invoice_status_label($r->status) }}</span></td>
-                        <td>{{ $r->creator->name ?? 'غير محدد' }}</td>
-                        <td>{{ optional($r->created_at)->format('H:i Y-m-d') }}</td>
-                        <td class="col-actions">
-                            <div class="btn-actions">
-                                <a href="{{ route('purchase-returns.show', $r) }}" class="btn btn-icon-action btn-icon-view" title="عرض">
-                                    <i class="fe fe-eye"></i><span class="sr-only">عرض</span>
-                                </a>
-                                @if($r->status === 'draft')
-                                    <x-delete-form :action="route('purchase-returns.destroy', $r)" message="هل أنت متأكد من حذف هذا المرتجع؟" title="حذف المرتجع" />
-                                @endif
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr><td colspan="10" class="text-center text-muted">لا توجد مرتجعات</td></tr>
-                @endforelse
-                </tbody>
-            </table>
-        </div>
-        <div class="mt-3">{{ $returns->links() }}</div>
+    <div class="card-header">
+        <h4 class="card-title"><i class="fe fe-corner-up-right"></i> مرتجعات المشتريات</h4>
+        <span class="count-badge">{{ $returns->total() }} مرتجع</span>
     </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0">
+            <thead>
+                <tr>
+                    <th class="col-serial">#</th>
+                    <th>الرقم</th>
+                    <th>المورد</th>
+                    <th>الفاتورة</th>
+                    <th>التاريخ</th>
+                    <th>الإجمالي</th>
+                    <th>الحالة</th>
+                    <th>أنشئت بواسطة</th>
+                    <th>تاريخ الإنشاء</th>
+                    <th class="col-actions">الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+            @forelse($returns as $r)
+                <tr>
+                    <td class="col-serial">{{ row_no($returns, $loop) }}</td>
+                    <td class="cell-strong">{{ $r->number }}</td>
+                    <td>{{ $r->supplier->name ?? '-' }}</td>
+                    <td>@if($r->invoice)<a href="{{ route('purchases.show', $r->invoice) }}">{{ $r->invoice->number }}</a>@else - @endif</td>
+                    <td>{{ optional($r->return_date)->format('Y-m-d') }}</td>
+                    <td class="cell-money">{{ money($r->total) }}</td>
+                    <td><span class="badge badge-{{ invoice_status_badge($r->status) }}">{{ invoice_status_label($r->status) }}</span></td>
+                    <td>{{ $r->creator->name ?? 'غير محدد' }}</td>
+                    <td class="text-muted">{{ optional($r->created_at)->format('H:i Y-m-d') }}</td>
+                    <td class="col-actions">
+                        <div class="btn-actions">
+                            <x-view-link :href="route('purchase-returns.show', $r)" title="عرض المرتجع" />
+                            @if($r->status === 'draft')
+                                <x-delete-form :action="route('purchase-returns.destroy', $r)" message="هل أنت متأكد من حذف هذا المرتجع؟" title="حذف المرتجع" />
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="10" class="cell-empty text-center text-muted"><i class="fe fe-corner-up-right"></i>لا توجد مرتجعات</td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+    @if($returns->hasPages())
+        <div class="card-footer table-card-footer">
+            <span class="text-muted">عرض {{ $returns->firstItem() }} - {{ $returns->lastItem() }} من {{ $returns->total() }}</span>
+            {{ $returns->withQueryString()->links() }}
+        </div>
+    @endif
 </div>
 
 <div class="modal fade" id="addPurchaseReturnModal" tabindex="-1" role="dialog" aria-labelledby="addPurchaseReturnModalTitle" aria-hidden="true">
